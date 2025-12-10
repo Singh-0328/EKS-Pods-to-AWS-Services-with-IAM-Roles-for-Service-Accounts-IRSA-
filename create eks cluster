@@ -1,0 +1,38 @@
+steps :-----------------------------------------------
+sudo apt install awscli -y
+aws configure
+#Install aws-iam-authenticator
+https://weaveworks-gitops.awsworkshop.io/60_workshop_6_ml/00_prerequisites.md/50_install_aws_iam_auth.html (Updated & WOrking)
+curl -o aws-iam-authenticator https://amazon-eks.s3.ap-south-1.amazonaws.com/1.15.10/2020-02-22/bin/linux/amd64/aws-iam-authenticator
+chmod +x ./aws-iam-authenticator
+sudo mv ./aws-iam-authenticator /usr/local/bin
+aws-iam-authenticator help
+#kubectl installation to talk to api server
+curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.19.6/2021-01-05/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+sudo mv ./kubectl /usr/local/bin
+kubectl version --short --client
+#install eksctl (EKS cluster automation tool) to create eks
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+sudo mv /tmp/eksctl /usr/local/bin
+eksctl version
+#Create your cluster and nodes
+eksctl create cluster --name cluster-name  \
+--region region-name \
+--node-type instance-type \
+--nodes-min 2 \
+--nodes-max 2 \ 
+--zones <AZ-1>,<AZ-2>
+#Create an IAM OIDC identity provider for your cluster. In this we are actually associating oidc provider which is created for eks. from GUI you can do this 
+
+eksctl utils associate-iam-oidc-provider --cluster eks-irsa-cluster  --approve --region us-east-2
+#Create a policy to allow s3 bucket access 
+# make a file in cli of trust-relationship.json and change the oidc provider as well as federated, namespace ,service account.
+#Creating a role and appending the above trust policy.you can create role manually also from gui and then also add manually trust-relationship
+aws iam create-role --role-name role-irsa-demo --assume-role-policy-document file://trust-relationship.json --description "irsa role description"
+#Attaching the role witht the policy we created in above steps. change the arn accordingly
+aws iam attach-role-policy --role-name role-irsa-demo --policy-arn=arn:aws:iam::251620460948:policy/irsa-eks-demo-policy
+#Appending Annotations in the ServiceAccount we have to use.
+kubectl annotate serviceaccount -n test nginx-sa eks.amazonaws.com/role-arn=arn:aws:iam::251620460948:role/role-irsa-demo
+
+
