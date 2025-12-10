@@ -13,6 +13,8 @@ How IRSA Works
 
 OIDC Setup:
 When an Amazon EKS cluster is created, an OIDC identity provider URL is associated with the cluster. You need to configure IAM to trust this identity provider.
+<img width="1366" height="669" alt="image" src="https://github.com/user-attachments/assets/e626d203-1217-4c58-a832-f3e2b7f19b87" />
+
 
 Service Account and IAM Role Association:
 You create a Kubernetes service account and annotate it with an IAM role. This annotation links the Kubernetes service account with the specific IAM role.
