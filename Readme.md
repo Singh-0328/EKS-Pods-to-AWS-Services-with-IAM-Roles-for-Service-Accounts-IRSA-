@@ -37,3 +37,8 @@ Node-level roles (like an EC2 instance profile) are no longer necessary for pod 
 
 Least Privilege Principle:
 Each pod can operate with the minimum permissions required, adhering to security best practices.
+
+aws-iam-authenticator specifically on Ubuntu EC2 when working with AWS EKS.
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/556e120e-88eb-48e3-afd2-125f0e0a4192" />
+
+Because EKS uses IAM-based authentication, it requires the aws-iam-authenticator binary to generate authentication tokens for Kubernetes API. Amazon Linux has it by default, but Ubuntu does not, so we must install it manually on any Ubuntu EC2 used as an EKS admin/bastion host.
